@@ -45,12 +45,6 @@
                     <a href="/catalogo"
                         class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors hover:bg-white/15 hover:text-white">Catálogo</a>
 
-                    {% if session.get("usuario_id") %}
-
-                    <a href="/pedidos"
-                        class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors hover:bg-white/15 hover:text-white">Pedidos</a>
-
-                    {% endif %}
 
                     {% if not session.get("usuario_id") %} <!--Para só aparecer caso não esteja logado-->
                     <!-- Cadastro -->
@@ -83,15 +77,6 @@
 
                     {% endif %}
 
-                    <a href="/carrinho"
-                        class="flex item-center justify-center rounded-lg p-3 transition-colors hover:bg-white/15">
-                        <svg class="size-6" xmlns="http://www.w3.org/2000/sgv" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 3h2l2.4 12h11.2l2-8H6M8 15l-1 3h12" />
-                            <circle cx="9" cy="21" r="1" />
-                            <circle cx="18" cy="21" r="1" />
-                        </svg></a>
 
                     {% if session.get('usuario_id') %}
                     <a class="group inline-flex h-10 items-center justify-center gap-3 rounded-full border border-red-950 bg-red-950 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:border-red-900 hover:bg-red-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200"
@@ -165,34 +150,8 @@
                     <span>Catálogo</span>
                 </a>
 
-                <!-- Carrinho -->
-                <a href="/carrinho"
-                    class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-medium text-white transition-colors hover:bg-red-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 3h2l2.4 12h11.2l2-8H6M8 15l-1 3h12" />
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="18" cy="21" r="1" />
-                    </svg>
-
-                    <span>Carrinho</span>
-                </a>
-
                 {% if session.get("usuario_id") %}
 
-                <a href="/pedidos"
-                    class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-medium text-white transition-colors hover:bg-red-700">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                        <rect x="5" y="4" width="14" height="18" rx="2" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 10h6M9 14h6M9 18h4" />
-                    </svg>
-
-
-                    <span>Pedidos</span>
-                </a>
 
                 <a href="/logout" class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-semibold text-white"
                     style="background-color: #450a0a; border: 2px solid #450a0a;">
@@ -305,10 +264,7 @@
                 <ul class="mt-4 space-y-3 text-sm">
                     <li><a href="/home" class="transition-colors hover:text-white">Início</a></li>
                     <li><a href="/catalogo" class="transition-colors hover:text-white">Catálogo</a></li>
-                    {% if session.get("usuario_id") %}
-                    <li><a href="/pedidos" class="transition-colors hover:text-white">Pedidos</a></li>
-                    {% endif %}
-                    <li><a href="/carrinho" class="transition-colors hover:text-white">Carrinho</a></li>
+
                 </ul>
             </nav>
 

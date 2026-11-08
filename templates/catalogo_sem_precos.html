@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+{% set produtos = [
+    {"nome": "Caneta CA3002", "imagem": "CA3002.jpg"},
+    {"nome": "Caneta CA3004", "imagem": "CA3004.jpg"},
+    {"nome": "Caneta CA3005", "imagem": "CA3005.jpg"},
+    {"nome": "Caneta CA3006", "imagem": "CA3006.jpg"},
+    {"nome": "Caneta CA3007", "imagem": "CA3007.jpg"},
+    {"nome": "Suporte para celular", "imagem": "suporte.jpg"}
+] %}
+
+<main class="bg-stone-50 px-6 py-16 sm:px-10 lg:px-12">
+    <div class="mx-auto max-w-7xl">
+
+        <header class="mb-10 text-center">
+            <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                Projeto ST
+            </p>
+            <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                Nosso catálogo
+            </h1>
+            <p class="mt-3 text-slate-600">
+                Conheça nossos brindes personalizados.
+            </p>
+        </header>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for produto in produtos %}
+            <article class="overflow-hidden rounded-2xl border border-stone-200 shadow-sm">
+                <div class="relative h-72 overflow-hidden bg-white sm:h-80">
+                    <img
+                        src="{{ url_for('static', filename='img/' ~ produto.imagem) }}"
+                        alt="{{ produto.nome }}"
+                        class="absolute inset-0 h-full w-full object-contain"
+                    >
+                </div>
+
+                <div class="min-h-36 bg-stone-100 p-5">
+                    <h2 class="text-lg font-bold text-slate-900">
+                        {{ produto.nome }}
+                    </h2>
+                    <p class="mt-2 text-sm text-slate-600">
+                        Brinde personalizado para empresas e eventos.
+                    </p>
+                    <p class="mt-4 font-semibold text-red-700">
+                        <a href="{{ url_for('login') }}" class="underline hover:text-red-900">
+                            Faça o login para ver o preço
+                        </a>
+                    </p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+    </div>
+</main>
+{% endblock %}

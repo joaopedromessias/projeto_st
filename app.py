@@ -101,17 +101,12 @@ def logout():
     flash("Você saiu da sua conta.", "sucesso")
     return redirect(url_for("home"))
 
-@app.route("/carrinho")
-def carrinho():
-    return render_template("carrinho.html")
-
-@app.route("/pedidos")
-def pedidos():
-    return render_template("pedidos.html")
-
 @app.route("/catalogo")
 def catalogo():
-    return render_template("catalogo.html")
+    if session.get("usuario_id"):
+        return render_template("catalogo_precos.html")
+
+    return render_template("catalogo_sem_precos.html")
 
 if __name__=="__main__":
     app.run(debug=True)
