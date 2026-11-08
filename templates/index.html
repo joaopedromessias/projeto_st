@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<style>
+    @keyframes entrada-suave {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes entrada-imagem {
+        from {
+            opacity: 0;
+            transform: translateX(28px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .hero-entrada {
+        opacity: 0;
+        animation: entrada-suave 700ms ease-out var(--atraso, 0ms) both;
+    }
+
+    .hero-imagem-entrada {
+        opacity: 0;
+        animation: entrada-imagem 900ms ease-out var(--atraso, 0ms) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .hero-entrada,
+        .hero-imagem-entrada {
+            opacity: 1;
+            animation: none;
+        }
+    }
+</style>
+<style>
+    .revelar {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+            transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+        transition-delay: var(--atraso, 0ms);
+    }
+
+    .revelar.visivel {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .revelar {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+    }
+</style>
+
+<main style="font-family: 'Manrope', sans-serif;">
+
+    <!-- Destaque principal -->
+    <section class="relative isolate overflow-hidden bg-linear-to-br from-red-950 via-red-900 to-red-800 text-white">
+        <div aria-hidden="true"
+            class="pointer-events-none absolute -right-40 -top-40 -z-10 size-[34rem] rounded-full bg-red-500/15 blur-3xl">
+        </div>
+
+        <div
+            class="mx-auto grid min-h-[580px] max-w-7xl items-center gap-8 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:px-12">
+
+            <div class="max-w-2xl">
+                <p class="revelar mb-5 text-sm font-bold text-red-100 sm:text-base" style="--atraso: 100ms;">
+                    Brindes corporativos personalizados
+                </p>
+
+                <h1 class="revelar text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl"
+                    style="--atraso: 200ms;">
+                    Sua marca
+                    <span class="block text-red-200">em destaque.</span>
+                </h1>
+
+                <p class="revelar mt-4 text-3xl italic leading-tight text-white/90 sm:text-4xl"
+                    style="--atraso: 300ms; font-family: 'DM Serif Display', serif;">
+                    Brindes que lembram você
+                </p>
+
+                <ul class="mt-8 space-y-4 text-sm font-medium text-white/90 sm:text-base">
+                    <li class="revelar flex items-center gap-3" style="--atraso: 400ms;">
+                        <span class="font-bold text-white">✓</span>
+                        Canetas personalizadas para sua empresa
+                    </li>
+                    <li class="revelar flex items-center gap-3" style="--atraso: 500ms;">
+                        <span class="font-bold text-white">✓</span>
+                        Suportes de celular úteis no dia a dia
+                    </li>
+                    <li class="revelar flex items-center gap-3" style="--atraso: 600ms;">
+                        <span class="font-bold text-white">✓</span>
+                        Brindes para eventos, equipes e clientes
+                    </li>
+                </ul>
+
+                <a href="/catalogo"
+                    class="revelar mt-8 inline-flex rounded-md bg-white px-6 py-3 text-sm font-bold text-red-900 transition hover:bg-red-100"
+                    style="--atraso: 700ms;">
+                    Ver catálogo
+                </a>
+            </div>
+
+            <div class="revelar hidden items-center justify-center lg:-mt-16 lg:flex translate-y-10"
+                style="--atraso: 300ms;">
+                <img src="{{ url_for('static', filename='img/produtos.png') }}"
+                    alt="Canetas e suportes de celular personalizados"
+                    class="max-h-[560px] w-full max-w-[600px] object-contain">
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Informações da empresa -->
+    <section class="bg-stone-50 px-6 py-20 sm:px-10 lg:px-12">
+        <div class="mx-auto max-w-5xl">
+            <div class="revelar mx-auto mb-10 max-w-2xl text-center">
+                <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                    Projeto ST
+                </p>
+                <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                    Brindes que chegam mais longe
+                </h2>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <article class="revelar rounded-2xl border border-stone-200 bg-white p-8 shadow-sm"
+                    style="--atraso: 100ms;">
+                    <div class="mb-5 grid size-12 place-items-center rounded-xl bg-red-50 text-red-700">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m4.5 7.5 7.5 4.3 7.5-4.3M12 12v8.5" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 sm:text-2xl">
+                        Milhões de produtos vendidos mensalmente
+                    </h3>
+                    <p class="mt-3 leading-relaxed text-slate-600">
+                        Brindes escolhidos por empresas para divulgar suas marcas e presentear clientes.
+                    </p>
+                </article>
+
+                <article class="revelar rounded-2xl border border-stone-200 bg-white p-8 shadow-sm"
+                    style="--atraso: 220ms;">
+                    <div class="mb-5 grid size-12 place-items-center rounded-xl bg-red-50 text-red-700">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h11v10H3zM14 10h4l3 3v4h-7z" />
+                            <circle cx="7.5" cy="18" r="1.8" />
+                            <circle cx="17.5" cy="18" r="1.8" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 sm:text-2xl">
+                        Entregamos para todo o Brasil
+                    </h3>
+                    <p class="mt-3 leading-relaxed text-slate-600">
+                        Seus brindes podem chegar a clientes, equipes e eventos em todas as regiões do país.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorias de produtos -->
+    <section class="bg-white px-6 py-20 sm:px-10 lg:px-12">
+        <div class="mx-auto max-w-7xl">
+            <div class="revelar mb-10 text-center">
+                <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                    Nosso catálogo
+                </p>
+                <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                    Escolha o brinde ideal
+                </h2>
+                <p class="mx-auto mt-3 max-w-2xl text-slate-600">
+                    Produtos úteis para divulgar sua marca no dia a dia.
+                </p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+
+                <!-- Card de canetas -->
+                <article
+                    class="revelar flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    style="--atraso: 100ms;">
+
+                    <div class="relative h-72 shrink-0 overflow-hidden bg-stone-50">
+                        <img src="{{ url_for('static', filename='img/canetas.png') }}" alt="Canetas personalizadas"
+                            class="absolute inset-0 h-full w-full object-cover">
+                    </div>
+
+                    <div class="relative z-10 bg-white p-7">
+                        <p class="text-sm font-bold text-red-700">Brindes personalizados</p>
+                        <h3 class="mt-2 text-2xl font-extrabold text-slate-900">Canetas</h3>
+                        <p class="mt-3 leading-relaxed text-slate-600">
+                            Canetas para ações promocionais, eventos e presentes corporativos.
+                        </p>
+                        <a href="/catalogo" class="mt-6 inline-flex font-bold text-red-700 hover:text-red-900">
+                            Ver catálogo <span class="ml-2" aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card de suportes de celular -->
+                <article
+                    class="revelar flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    style="--atraso: 220ms;">
+
+                    <div class="relative h-72 shrink-0 overflow-hidden bg-stone-50">
+                        <img src="{{ url_for('static', filename='img/suporte.png') }}"
+                            alt="Suportes de celular personalizados"
+                            class="absolute inset-0 h-full w-full object-cover">
+                    </div>
+
+                    <div class="relative z-10 bg-white p-7">
+                        <p class="text-sm font-bold text-red-700">Brindes personalizados</p>
+                        <h3 class="mt-2 text-2xl font-extrabold text-slate-900">Suportes de celular</h3>
+                        <p class="mt-3 leading-relaxed text-slate-600">
+                            Suportes práticos para manter sua marca sempre à vista.
+                        </p>
+                        <a href="/catalogo" class="mt-6 inline-flex font-bold text-red-700 hover:text-red-900">
+                            Ver catálogo <span class="ml-2" aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const elementosParaRevelar = document.querySelectorAll(".revelar");
+
+    if ("IntersectionObserver" in window) {
+        const observador = new IntersectionObserver((entradas, observer) => {
+            entradas.forEach((entrada) => {
+                if (entrada.isIntersecting) {
+                    entrada.target.classList.add("visivel");
+                    observer.unobserve(entrada.target);
+                }
+            });
+        }, {
+            threshold: 0.15
+        });
+
+        elementosParaRevelar.forEach((elemento) => observador.observe(elemento));
+    } else {
+        elementosParaRevelar.forEach((elemento) => {
+            elemento.classList.add("visivel");
+        });
+    }
+</script>
+{% endblock %}

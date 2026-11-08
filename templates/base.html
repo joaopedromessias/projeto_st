@@ -1,20 +1,27 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./static/css/estilo.css">
-    <title>Projeto ST</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <title> {% block title %} Projeto ST {% endblock %}</title>
 </head>
 
-
-<body>
+<body class="flex min-h-screen flex-col">
     <header>
         <nav class="bg-linear-to-r from-red-800 via-red-700 to-red-600 text-white shadow-lg">
             <div class="flex w-full flex-wrap items-center justify-between gap-y-2 px-6 py-2 lg:px-8">
-                <a href="/home" class="shrink-0 text-2xl font-extrabold tracking-tight">ProjetoST<span
-                        class="text-red-300">.</span></a>
+                <a href="/home" class="ml-10 shrink-0">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Projeto ST"
+                        class="h-14 w-auto object-contain">
+                </a>
                 <button id="abrir-menu" type="button" aria-expanded="false"
                     class="rounded-lg p-2 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:hidden">
                     <svg class="size-6" xmls="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -22,17 +29,31 @@
                         <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                
+
                 <!-- Menu telas maiores -->
                 <div id="menu"
                     class="hidden w-full flex-col gap-2 border-white/20 pt-4 md:flex md:w-auto md:flex-row md:items-center md:border-0 md:pt-0">
+
+                    {% if session.get("usuario_id") %}
+                    <div class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors">Olá, {{
+                        session.get('usuario_nome') }}</div>
+                    {% endif %}
+
+                    <a href="/index"
+                        class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors hover:bg-white/15 hover:text-white">Início</a>
+
                     <a href="/catalogo"
                         class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors hover:bg-white/15 hover:text-white">Catálogo</a>
-                    
-                        <a href="/pedidos"
+
+                    {% if session.get("usuario_id") %}
+
+                    <a href="/pedidos"
                         class="rounded-lg px-3 py-2 text-sm font-medium text-red-50 transition-colors hover:bg-white/15 hover:text-white">Pedidos</a>
-                    
-                        <!-- Cadastro -->
+
+                    {% endif %}
+
+                    {% if not session.get("usuario_id") %} <!--Para só aparecer caso não esteja logado-->
+                    <!-- Cadastro -->
                     <a class="group inline-flex h-10 items-center justify-center gap-3 rounded-full border border-red-500 bg-red-500 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:border-red-400 hover:bg-red-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200"
                         href="/cadastro">
                         <span>Cadastro</span>
@@ -59,6 +80,9 @@
                                 d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                         </svg>
                     </a>
+
+                    {% endif %}
+
                     <a href="/carrinho"
                         class="flex item-center justify-center rounded-lg p-3 transition-colors hover:bg-white/15">
                         <svg class="size-6" xmlns="http://www.w3.org/2000/sgv" fill="none" viewBox="0 0 24 24"
@@ -68,10 +92,27 @@
                             <circle cx="9" cy="21" r="1" />
                             <circle cx="18" cy="21" r="1" />
                         </svg></a>
+
+                    {% if session.get('usuario_id') %}
+                    <a class="group inline-flex h-10 items-center justify-center gap-3 rounded-full border border-red-950 bg-red-950 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:border-red-900 hover:bg-red-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200"
+                        href="/logout">
+                        <span>Sair</span>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 21h16M6 21V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17M9 21V5l7 2v14M13 13h.01" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 12h4m-2-2 2 2-2 2" />
+                        </svg>
+
+                    </a>
+                    {% endif %}
+
                 </div>
+
                 <!-- Fim do menu telas maiores -->
         </nav>
-       
+
         <!-- Início menu lateral para mobile -->
 
         <aside id="menu-lateral"
@@ -88,7 +129,14 @@
                 </svg>
             </button>
 
+            {% if not session.get("usuario_id") %}
             <h2 class="mb-6 text-2xl font-semibold">Olá, visitante!</h2>
+            {% endif %}
+
+            {% if session.get("usuario_id") %}
+            <h2 class="mb-6 text-2xl font-semibold">Olá, {{
+                session.get('usuario_nome') }}!</h2>
+            {% endif %}
 
             <nav class="flex flex-col gap-4" style="margin-top: 2rem;">
                 <!-- Início -->
@@ -100,6 +148,21 @@
                     </svg>
 
                     <span>Início</span>
+                </a>
+
+                <a href="/catalogo"
+                    class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-medium text-white transition-colors hover:bg-red-700">
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 10h18M5 10v11h14V10M3 10l2-7h14l2 7M9 21v-7h6v7M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+                    </svg>
+
+
+
+                    <span>Catálogo</span>
                 </a>
 
                 <!-- Carrinho -->
@@ -116,6 +179,40 @@
                     <span>Carrinho</span>
                 </a>
 
+                {% if session.get("usuario_id") %}
+
+                <a href="/pedidos"
+                    class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-medium text-white transition-colors hover:bg-red-700">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <rect x="5" y="4" width="14" height="18" rx="2" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 10h6M9 14h6M9 18h4" />
+                    </svg>
+
+
+                    <span>Pedidos</span>
+                </a>
+
+                <a href="/logout" class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-semibold text-white"
+                    style="background-color: #450a0a; border: 2px solid #450a0a;">
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="shrink-0" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 21h16M6 21V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17M9 21V5l7 2v14M13 13h.01" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 12h4m-2-2 2 2-2 2" />
+                    </svg>
+
+
+
+                    <span>Sair</span>
+                </a>
+
+                {% endif %}
+
+                {% if not session.get("usuario_id") %}
                 <!-- Cadastro -->
                 <a href="/cadastro"
                     class="flex items-center gap-4 rounded-xl px-4 py-4 text-lg font-semibold text-white"
@@ -141,60 +238,164 @@
 
                     <span>Login</span>
                 </a>
+
+                {% endif %}
             </nav>
         </aside>
-      <!-- Fim do menu lateral -->
+        <!-- Fim do menu lateral -->
         </div>
     </header>
-    <!--Botão do whatsapp-->
-<a
-    href="https://wa.me/5519936196237?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20dos%20produtos"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="Conversar pelo WhatsApp"
-    class="fixed bottom-6 right-6 z-50 block h-16 w-16 cursor-pointer text-green-500 drop-shadow-lg transition-transform duration-200 hover:scale-110 hover:text-green-600"
->
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="64"
-        height="64"
-        viewBox="0 0 24 24"
-        class="h-full w-full"
-        aria-hidden="true"
-    >
-        <!-- Balão verde -->
-        <path
-            fill="currentColor"
-            d="M12 2a10 10 0 0 0-8.66 15L2 22l5.13-1.34A10 10 0 1 0 12 2Z"
-        />
+    <main class="flex-1">
 
-        <!-- Telefone branco -->
-        <path
-            fill="white"
-            d="M17.5 14.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.49 1.7.62.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"
-        />
-    </svg>
-</a>
-<!--Fim do botão do whatsapp-->
+        <!-- Div para exibição do Flash -->
+        <div id="flash-container" class="fixed right-4 top-24 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3">
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+
+            <div role="alert" class="flash-toast flex items-center gap-3 rounded-xl border
+                        px-5 py-4 shadow-xl transition-all duration-500
+                        {% if categoria == 'erro' %}
+                            border-red-300 bg-red-50 text-red-800
+                        {% elif categoria == 'sucesso' %}
+                            border-green-300 bg-green-50 text-green-800
+                        {% else %}
+                            border-gray-300 bg-white text-gray-800
+                        {% endif %}">
+
+                <span class="flex-1 text-sm font-medium">
+                    {{ mensagem }}
+                </span>
+
+                <button type="button" class="shrink-0 text-xl font-bold opacity-60 hover:opacity-100"
+                    aria-label="Fechar notificação" onclick="this.closest('.flash-toast').remove()">
+                    &times;
+                </button>
+
+            </div>
+
+            {% endfor %}
+            {% endwith %}
+
+        </div>
+
+        {% block conteudo %} {% endblock %}
+    </main>
+
+    <footer class="mt-auto bg-red-950 text-red-50">
+        <div class="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-3 lg:px-8">
+
+            <!-- Marca e descrição -->
+            <div>
+                <a href="/home" class="text-2xl font-extrabold tracking-tight text-white">
+                    Projeto ST<span class="text-red-400">.</span>
+                </a>
+
+                <p class="mt-4 max-w-sm text-sm leading-6 text-red-200">
+                    Encontre produtos selecionados com praticidade e atendimento próximo.
+                </p>
+            </div>
+
+            <!-- Navegação -->
+            <nav aria-label="Links do rodapé">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-white">
+                    Navegação
+                </h2>
+
+                <ul class="mt-4 space-y-3 text-sm">
+                    <li><a href="/home" class="transition-colors hover:text-white">Início</a></li>
+                    <li><a href="/catalogo" class="transition-colors hover:text-white">Catálogo</a></li>
+                    {% if session.get("usuario_id") %}
+                    <li><a href="/pedidos" class="transition-colors hover:text-white">Pedidos</a></li>
+                    {% endif %}
+                    <li><a href="/carrinho" class="transition-colors hover:text-white">Carrinho</a></li>
+                </ul>
+            </nav>
+
+            <!-- Contato -->
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-white">
+                    Fale com a gente
+                </h2>
+
+                <p class="mt-4 text-sm leading-6 text-red-200">
+                    Ficou com alguma dúvida sobre os produtos?
+                </p>
+
+                <a href="https://wa.me/5519936196237?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20dos%20produtos"
+                    target="_blank" rel="noopener noreferrer"
+                    class="mt-4 inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">
+                    <!-- Ícone do WhatsApp -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5"
+                        aria-hidden="true">
+                        <path
+                            d="M12 2a10 10 0 0 0-8.66 15L2 22l5.13-1.34A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.08-1.12l-.29-.17-3.05.8.82-2.97-.19-.31A8 8 0 1 1 12 20Zm4.39-5.99c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.46-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.57 4.09 3.61.57.25 1.02.39 1.37.5.58.18 1.1.16 1.51.1.46-.07 1.43-.58 1.63-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z" />
+                    </svg>
+
+                    Conversar pelo WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <div class="border-t border-red-800">
+            <p class="mx-auto max-w-7xl px-6 py-5 text-center text-xs text-red-300 lg:px-8">
+                &copy; Projeto ST. Todos os direitos reservados.
+            </p>
+        </div>
+
+    </footer>
+
+    <!--Botão do whatsapp-->
+    <a href="https://wa.me/5519936196237?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20dos%20produtos"
+        target="_blank" rel="noopener noreferrer" aria-label="Conversar pelo WhatsApp"
+        class="fixed bottom-6 right-6 z-50 block h-16 w-16 cursor-pointer text-green-500 drop-shadow-lg transition-transform duration-200 hover:scale-110 hover:text-green-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" class="h-full w-full"
+            aria-hidden="true">
+            <!-- Balão verde -->
+            <path fill="currentColor" d="M12 2a10 10 0 0 0-8.66 15L2 22l5.13-1.34A10 10 0 1 0 12 2Z" />
+
+            <!-- Telefone branco -->
+            <path fill="white"
+                d="M17.5 14.37c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.49 1.7.62.72.23 1.37.2 1.88.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z" />
+        </svg>
+    </a>
+    <!--Fim do botão do whatsapp-->
+    <script type="text/javascript">
+
+        /* Parte responsável por abrir e fechar o menu hamburguer da navbar mobile */
+        const botaoAbrir = document.querySelector("#abrir-menu");
+        const botaoFechar = document.querySelector("#fechar-menu");
+        const menu = document.querySelector("#menu-lateral");
+
+        function definirMenu(aberto) {
+            menu.classList.toggle("translate-x-full", !aberto);
+            menu.setAttribute("aria-hidden", String(!aberto));
+            menu.inert = !aberto;
+            botaoAbrir.setAttribute("aria-expanded", String(aberto));
+        }
+
+        botaoAbrir.addEventListener("click", () => definirMenu(true));
+        botaoFechar.addEventListener("click", () => definirMenu(false));
+        /* Fim Parte responsável por abrir e fechar o menu hamburguer da navbar mobile */
+
+        /* Parte responsável pelo desaparecimento dos botão flash */
+        document.querySelectorAll(".flash-toast").forEach((toast) => {
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-x-8");
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+
+            }, 4000);
+        });
+        /* Fim da parte dos botão flash */
+
+
+    </script>
+
+    {% block script %} {% endblock %}
 
 </body>
-<script type="text/javascript">
-
-    /* Parte responsável por abrir e fechar o menu hamburguer da navbar mobile */
-    const botaoAbrir = document.querySelector("#abrir-menu");
-    const botaoFechar = document.querySelector("#fechar-menu");
-    const menu = document.querySelector("#menu-lateral");
-
-    function definirMenu(aberto) {
-        menu.classList.toggle("translate-x-full", !aberto);
-        menu.setAttribute("aria-hidden", String(!aberto));
-        menu.inert = !aberto;
-        botaoAbrir.setAttribute("aria-expanded", String(aberto));
-    }
-
-    botaoAbrir.addEventListener("click", () => definirMenu(true));
-    botaoFechar.addEventListener("click", () => definirMenu(false));
-    /* Fim Parte responsável por abrir e fechar o menu hamburguer da navbar mobile */
-</script>
 
 </html>

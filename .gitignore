@@ -1,3 +1,4 @@
 .env
 tailwindcss.exe
 .venv
+instance/
