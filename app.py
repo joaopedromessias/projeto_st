@@ -12,7 +12,25 @@ load_dotenv()
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///projetost.db"
+database_url = os.getenv("DATABASE_URL", "sqlite:///projetost.db")
+
+# Adapta a URL para usar o driver psycopg instalado.
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace(
+        "postgres://",
+        "postgresql+psycopg://",
+        1
+    )
+elif database_url.startswith("postgresql://"):
+    database_url = database_url.replace(
+        "postgresql://",
+        "postgresql+psycopg://",
+        1
+    )
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+
+db.init_app(app)
 
 db.init_app(app)
 
