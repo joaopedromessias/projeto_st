@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<main class="min-h-screen bg-stone-50 px-6 py-12 sm:px-10 lg:px-12">
+    <div class="mx-auto max-w-5xl">
+
+        <header class="mb-8">
+            <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                Projeto ST
+            </p>
+            <h1 class="mt-2 text-3xl font-extrabold text-slate-900">
+                Meus pedidos
+            </h1>
+        </header>
+
+        {% for pedido in pedidos %}
+            <article class="mb-5 rounded-xl border border-stone-200 bg-white p-5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-lg font-bold text-slate-900">
+                        Pedido #{{ pedido.id }}
+                    </h2>
+
+                    <span class="rounded-full bg-stone-100 px-3 py-1 text-sm font-semibold text-slate-700">
+                        {{ status_pedido.get(pedido.status, pedido.status) }}
+                    </span>
+                </div>
+
+                <p class="mt-2 text-sm text-slate-600">
+                    Data: {{ pedido.criado_em.strftime("%d/%m/%Y às %H:%M") }}
+                </p>
+
+                <ul class="mt-4 divide-y divide-stone-100">
+                    {% for item in pedido.itens %}
+                        <li class="flex flex-wrap justify-between gap-2 py-3 text-sm">
+                            <span class="text-slate-700">
+                                {{ item.nome_produto }} —
+                                {{ item.quantidade_pacotes }} pacote(s) de
+                                {{ item.unidades_por_pacote }} unidades
+                            </span>
+                            <span class="font-semibold text-slate-900">
+                                R$ {{ "%.2f"|format(item.subtotal)|replace(".", ",") }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <p class="mt-4 text-right text-lg font-extrabold text-slate-900">
+                    Total: R$ {{ "%.2f"|format(pedido.total)|replace(".", ",") }}
+                </p>
+            </article>
+        {% else %}
+            <div class="rounded-xl border border-stone-200 bg-white p-8 text-center">
+                <h2 class="text-xl font-bold text-slate-900">
+                    Você ainda não fez pedidos
+                </h2>
+                <a href="{{ url_for('catalogo') }}"
+                   class="mt-5 inline-block rounded-lg bg-red-700 px-6 py-3 font-bold text-white hover:bg-red-800">
+                    Ver catálogo
+                </a>
+            </div>
+        {% endfor %}
+
+    </div>
+</main>
+{% endblock %}

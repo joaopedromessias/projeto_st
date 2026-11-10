@@ -1,1 +1,154 @@
 {% extends "base.html" %}
+
+
+{% block conteudo %}
+
+<main id="catalogo" class="bg-stone-50 px-6 py-16 sm:px-10 lg:px-12">
+    <div class="mx-auto max-w-7xl">
+
+        <header class="mb-10 text-center">
+            <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                Projeto ST
+            </p>
+
+            <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                Nosso catálogo
+            </h1>
+
+            <p class="mx-auto mt-3 max-w-2xl text-slate-600">
+                Encontre brindes personalizados para sua empresa, seus eventos e seus clientes.
+            </p>
+        </header>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for produto in produtos %}
+                <article class="flex flex-col overflow-hidden rounded-2xl border border-stone-200 shadow-sm">
+
+                    <!-- Área branca da imagem -->
+                    <div class="relative h-72 shrink-0 overflow-hidden bg-white sm:h-80">
+                        <img
+                            src="{{ url_for('static', filename='img/' ~ produto.imagem) }}"
+                            alt="{{ produto.nome }}"
+                            class="absolute inset-0 h-full w-full object-contain"
+                        >
+                    </div>
+
+                    <!-- Informações e preço em fundo cinza -->
+                    <div class="flex flex-1 flex-col bg-stone-100 p-5">
+                        <h2 class="text-lg font-bold text-slate-900">
+                            {{ produto.nome }}
+                        </h2>
+
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                            Brinde personalizado para empresas, eventos e ações promocionais.
+                        </p>
+
+                        <div class="mt-5">
+                            <p class="text-sm font-semibold text-slate-600">
+                                Pacote com 100 unidades
+                            </p>
+                            <p class="mt-1 text-2xl font-extrabold text-red-700">
+                                R$ {{ produto.preco_exibicao }}
+                            </p>
+                        </div>
+
+                        <!-- Formulário envia produto e quantidade ao Flask -->
+                        <form method="POST"
+                              action="{{ url_for('adicionar_ao_carrinho') }}"
+                              class="produto-form mt-auto pt-5">
+
+                            <input
+                                type="hidden"
+                                name="codigo_produto"
+                                value="{{ produto.codigo }}"
+                            >
+
+                            <!-- Este valor é atualizado pelos botões + e − -->
+                            <input
+                                type="hidden"
+                                name="quantidade"
+                                value="1"
+                                data-quantidade-input
+                            >
+
+                            <div class="mb-4 flex items-center gap-3">
+                                <span class="text-sm font-medium text-slate-700">
+                                    Pacotes:
+                                </span>
+
+                                <div class="flex items-center rounded-lg border border-slate-300 bg-white">
+                                    <button
+                                        type="button"
+                                        data-diminuir
+                                        aria-label="Diminuir quantidade de pacotes"
+                                        class="h-9 w-9 font-bold text-slate-700 hover:bg-stone-100"
+                                    >
+                                        −
+                                    </button>
+
+                                    <span
+                                        data-quantidade
+                                        class="min-w-10 text-center font-semibold text-slate-900"
+                                    >
+                                        1
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        data-aumentar
+                                        aria-label="Aumentar quantidade de pacotes"
+                                        class="h-9 w-9 font-bold text-slate-700 hover:bg-stone-100"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="w-full rounded-lg bg-red-700 px-4 py-3 font-bold text-white transition hover:bg-red-800"
+                            >
+                                Adicionar ao carrinho
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // Cada card controla a própria quantidade de pacotes.
+    document.querySelectorAll(".produto-form").forEach((formulario) => {
+        const campoQuantidade =
+            formulario.querySelector("[data-quantidade-input]");
+
+        const textoQuantidade =
+            formulario.querySelector("[data-quantidade]");
+
+        formulario.querySelector("[data-aumentar]").addEventListener("click", () => {
+            const novaQuantidade = Number(campoQuantidade.value) + 1;
+
+            campoQuantidade.value = novaQuantidade;
+            textoQuantidade.textContent = novaQuantidade;
+        });
+
+        formulario.querySelector("[data-diminuir]").addEventListener("click", () => {
+            // A quantidade mínima permitida é um pacote.
+            const novaQuantidade = Math.max(
+                1,
+                Number(campoQuantidade.value) - 1
+            );
+
+            campoQuantidade.value = novaQuantidade;
+            textoQuantidade.textContent = novaQuantidade;
+        });
+    });
+</script>
+
+{% endblock %}
