@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Perguntas frequentes | Projeto ST{% endblock %}
+
+{% block conteudo %}
+<main class="min-h-screen bg-stone-50 px-6 py-12">
+    <div class="mx-auto max-w-4xl">
+        <h1 class="text-3xl font-extrabold text-slate-900">
+            Perguntas frequentes
+        </h1>
+
+        <section class="mt-8 space-y-4">
+            <details class="rounded-xl border bg-white p-5">
+                <summary class="cursor-pointer font-bold">Como faço um pedido?</summary>
+                <p class="mt-3">Acesse o catálogo, escolha os produtos, adicione ao carrinho, entre na sua conta e informe o endereço de entrega.</p>
+            </details>
+
+            <details class="rounded-xl border bg-white p-5">
+                <summary class="cursor-pointer font-bold">Preciso ter uma conta para comprar?</summary>
+                <p class="mt-3">Você pode consultar o catálogo sem entrar. Para finalizar o pedido, precisa criar uma conta ou fazer login.</p>
+            </details>
+
+            <details class="rounded-xl border bg-white p-5">
+                <summary class="cursor-pointer font-bold">Como vejo meus pedidos?</summary>
+                <p class="mt-3">Depois de entrar na conta, acesse a opção “Pedidos” no menu.</p>
+            </details>
+
+            <details class="rounded-xl border bg-white p-5">
+                <summary class="cursor-pointer font-bold">Como faço o pagamento?</summary>
+                <p class="mt-3">O pedido fica aguardando pagamento. Consulte os detalhes do pedido para combinar o pagamento com a loja.</p>
+            </details>
+
+            <details class="rounded-xl border bg-white p-5">
+                <summary class="cursor-pointer font-bold">Onde retiro meu pedido?</summary>
+                <p class="mt-3">Consulte a página “Empresa e local de retirada” e confirme os detalhes antes de se deslocar.</p>
+            </details>
+        </section>
+    </div>
+</main>
+{% endblock %}

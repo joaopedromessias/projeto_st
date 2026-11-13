@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-from models import db, Usuario, Pedido, ItemPedido
+from models import db, Usuario, Pedido, ItemPedido, EnderecoEntrega
 from decimal import Decimal
 from dotenv import load_dotenv
 import os
+import re
 
 
 load_dotenv()
@@ -14,7 +15,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 database_url = os.getenv("DATABASE_URL", "sqlite:///projetost.db")
 
-# Adapta a URL para usar o driver psycopg instalado.
 if database_url.startswith("postgres://"):
     database_url = database_url.replace(
         "postgres://",
@@ -37,7 +37,8 @@ with app.app_context():
 
 STATUS_PEDIDO = {
     "aguardando_pagamento": "Aguardando pagamento",
-    "pago": "Pagamento confirmado",
+    "pago": "Pagamento aprovado (simulação)",
+    "pagamento_recusado": "Pagamento recusado (simulação)",
     "em_separacao": "Em separação",
     "enviado": "Enviado",
     "entregue": "Entregue",
@@ -97,45 +98,52 @@ def home():
     return render_template("index.html")
 
 @app.route("/cadastro", methods=["GET", "POST"])
+@app.route("/cadastro", methods=["GET", "POST"])
+@app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
-
     if request.method == "POST":
-        nome=request.form.get("nome", "").strip()
-        sobrenome=request.form.get("sobrenome", "").strip()
-        email=request.form.get("email", "").strip().lower()
-        senha=request.form.get("senha", "")
+        nome = request.form.get("nome", "").strip()
+        sobrenome = request.form.get("sobrenome", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        senha = request.form.get("senha", "")
+        confirmar_senha = request.form.get("confirmar_senha", "")
 
-        if not nome or not sobrenome or not email or len(senha)<8:
-            flash("Preencha todos os campos corretamente", "erro")
+        if not nome or not sobrenome or not email:
+            flash("Preencha todos os campos.", "erro")
             return redirect(url_for("cadastro"))
 
-        usuario_existe = db.session.execute(
+        if len(senha) < 8:
+            flash("A senha precisa ter pelo menos 8 caracteres.", "erro")
+            return redirect(url_for("cadastro"))
+
+        if senha != confirmar_senha:
+            flash("As senhas não conferem.", "erro")
+            return redirect(url_for("cadastro"))
+
+        existente = db.session.execute(
             db.select(Usuario).filter_by(email=email)
         ).scalar_one_or_none()
 
-        if usuario_existe:
-            flash("Esse e-mail já está cadastrado, tente novamente", "erro")
+        if existente:
+            flash("Esse e-mail já está cadastrado.", "erro")
             return redirect(url_for("cadastro"))
-
-        senha_hash = generate_password_hash(senha)
 
         novo_usuario = Usuario(
             nome=nome,
             sobrenome=sobrenome,
             email=email,
-            senha_hash=senha_hash
+            senha_hash=generate_password_hash(senha)
         )
 
         try:
             db.session.add(novo_usuario)
             db.session.commit()
-
         except IntegrityError:
             db.session.rollback()
-            flash("Não foi possível completar o cadastro", "erro")
+            flash("Não foi possível concluir o cadastro.", "erro")
             return redirect(url_for("cadastro"))
 
-        flash("Cadastro realizado com sucesso!", "sucesso")
+        flash("Cadastro realizado. Entre na sua conta para continuar.", "sucesso")
         return redirect(url_for("login"))
 
     return render_template("cadastro.html")
@@ -153,13 +161,19 @@ def login():
         ).scalar_one_or_none()
 
         if usuario and check_password_hash(usuario.senha_hash, senha):
-            session.clear()
+            carrinho_visitante = session.get("carrinho", {}).copy()
 
+            session.clear()
+            session["carrinho"] = carrinho_visitante
             session["usuario_id"] = usuario.id
             session["usuario_nome"] = usuario.nome
             session["is_admin"] = usuario.email == "admin@admin.projetost"
 
             flash("Login realizado com sucesso!", "sucesso")
+
+            if carrinho_visitante:
+                return redirect(url_for("carrinho"))
+
             return redirect(url_for("home"))
 
         flash ("E-mail ou senha incorretos", "erro")
@@ -235,9 +249,10 @@ def pedidos():
         flash("Entre na sua conta para ver os pedidos.", "aviso")
         return redirect(url_for("login"))
 
-    # O login salva a chave "is_admin", então a rota precisa ler a mesma chave.
     if session.get("is_admin") is True:
-        lista_pedidos = Pedido.query.order_by(Pedido.criado_em.desc()).all()
+        lista_pedidos = Pedido.query.order_by(
+            Pedido.criado_em.desc()
+        ).all()
 
         return render_template(
             "pedidos_admin.html",
@@ -258,6 +273,66 @@ def pedidos():
         status_pedido=STATUS_PEDIDO
     )
 
+
+@app.route(
+    "/pedidos/<int:pedido_id>/simular-pagamento",
+    methods=["GET", "POST"]
+)
+def simular_pagamento(pedido_id):
+    usuario_id = session.get("usuario_id")
+
+    if not usuario_id:
+        flash("Entre na sua conta para continuar.", "aviso")
+        return redirect(url_for("login"))
+
+    pedido = db.session.get(Pedido, pedido_id)
+
+    if pedido is None:
+        flash("Pedido não encontrado.", "erro")
+        return redirect(url_for("pedidos"))
+
+    if pedido.id_usuario != usuario_id and session.get("is_admin") is not True:
+        abort(403)
+
+    status_tentaveis = ("aguardando_pagamento", "pagamento_recusado")
+
+    if pedido.status not in status_tentaveis:
+        flash("Este pedido não está disponível para simulação.", "aviso")
+        return redirect(url_for("pedidos"))
+
+    if request.method == "POST":
+        resultado = request.form.get("resultado")
+
+        resultados_validos = {
+            "aprovado": (
+                "pago",
+                "Simulação concluída: pagamento aprovado."
+            ),
+            "recusado": (
+                "pagamento_recusado",
+                "Simulação concluída: pagamento recusado."
+            ),
+            "pendente": (
+                "aguardando_pagamento",
+                "Simulação concluída: pagamento pendente."
+            )
+        }
+
+        if resultado not in resultados_validos:
+            flash("Escolha um resultado válido para a simulação.", "erro")
+            return redirect(
+                url_for("simular_pagamento", pedido_id=pedido.id)
+            )
+
+        novo_status, mensagem = resultados_validos[resultado]
+        pedido.status = novo_status
+        db.session.commit()
+
+        flash(mensagem, "sucesso")
+        return redirect(url_for("pedidos"))
+
+    return render_template("simular_pagamento.html", pedido=pedido)
+
 @app.route("/catalogo")
 def catalogo():
     return render_template(
@@ -276,6 +351,7 @@ def remover_do_carrinho(codigo):
 
 
 @app.route("/finalizar-compra", methods=["POST"])
+@app.route("/finalizar-compra", methods=["POST"])
 def finalizar_compra():
     usuario_id = session.get("usuario_id")
 
@@ -288,6 +364,33 @@ def finalizar_compra():
     if not carrinho_salvo:
         flash("Seu carrinho está vazio.", "aviso")
         return redirect(url_for("carrinho"))
+
+    dados = {
+        "cep": request.form.get("cep", "").strip(),
+        "logradouro": request.form.get("logradouro", "").strip(),
+        "numero": request.form.get("numero", "").strip(),
+        "complemento": request.form.get("complemento", "").strip(),
+        "bairro": request.form.get("bairro", "").strip(),
+        "cidade": request.form.get("cidade", "").strip(),
+        "uf": request.form.get("uf", "").strip().upper()
+    }
+
+    obrigatorios = ("cep", "logradouro", "numero", "bairro", "cidade", "uf")
+
+    if any(not dados[campo] for campo in obrigatorios):
+        flash("Preencha os campos obrigatórios do endereço.", "erro")
+        return redirect(url_for("carrinho"))
+
+    if not re.fullmatch(r"\d{5}-?\d{3}", dados["cep"]):
+        flash("Confira o CEP informado.", "erro")
+        return redirect(url_for("carrinho"))
+
+    if not re.fullmatch(r"[A-Z]{2}", dados["uf"]):
+        flash("Informe a sigla do estado com duas letras.", "erro")
+        return redirect(url_for("carrinho"))
+
+    cep = re.sub(r"\D", "", dados["cep"])
+    dados["cep"] = f"{cep[:5]}-{cep[5:]}"
 
     pedido = Pedido(
         id_usuario=usuario_id,
@@ -308,18 +411,19 @@ def finalizar_compra():
         except (TypeError, ValueError):
             continue
 
-        preco_pacote = Decimal(produto["preco"])
-        subtotal = preco_pacote * quantidade
+        preco = Decimal(produto["preco"])
+        subtotal = preco * quantidade
 
-        pedido.itens.append(ItemPedido(
-            codigo_produto=codigo,
-            nome_produto=produto["nome"],
-            unidades_por_pacote=100,
-            quantidade_pacotes=quantidade,
-            preco_pacote=preco_pacote,
-            subtotal=subtotal
-        ))
-
+        pedido.itens.append(
+            ItemPedido(
+                codigo_produto=codigo,
+                nome_produto=produto["nome"],
+                unidades_por_pacote=100,
+                quantidade_pacotes=quantidade,
+                preco_pacote=preco,
+                subtotal=subtotal
+            )
+        )
         total += subtotal
 
     if not pedido.itens:
@@ -327,6 +431,7 @@ def finalizar_compra():
         return redirect(url_for("carrinho"))
 
     pedido.total = total
+    pedido.endereco_entrega = EnderecoEntrega(**dados)
 
     try:
         db.session.add(pedido)
@@ -338,7 +443,6 @@ def finalizar_compra():
 
     session.pop("carrinho", None)
     flash("Pedido criado e aguardando pagamento.", "sucesso")
-
     return redirect(url_for("pedidos"))
 
 
@@ -364,6 +468,17 @@ def atualizar_status_pedido(pedido_id):
 
     flash(f"Status do pedido #{pedido.id} atualizado.", "sucesso")
     return redirect(url_for("pedidos"))
+
+@app.route("/perguntas-frequentes")
+def perguntas_frequentes():
+    return render_template("perguntas_frequentes.html")
+
+@app.route("/empresa")
+def empresa():
+    return render_template(
+        "empresa.html",
+        email_contato=os.getenv("CONTATO_EMAIL", "projetost@gmail.com").strip()
+    )
 
 if __name__=="__main__":
     app.run(debug=True)

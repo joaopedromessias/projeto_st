@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Simular pagamento | Projeto ST{% endblock %}
+
+{% block conteudo %}
+<main class="min-h-screen bg-stone-50 px-6 py-12">
+    <div class="mx-auto max-w-xl">
+        <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+            <p class="text-sm font-bold uppercase tracking-widest text-red-700">
+                Simulação local
+            </p>
+
+            <h1 class="mt-2 text-3xl font-extrabold text-slate-900">
+                Pagamento do pedido #{{ pedido.id }}
+            </h1>
+
+            <p class="mt-4 text-slate-700">
+                Total do pedido:
+                <strong>
+                    R$ {{ "%.2f"|format(pedido.total)|replace(".", ",") }}
+                </strong>
+            </p>
+
+            <p class="mt-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
+                Esta tela é apenas uma simulação acadêmica. Nenhum pagamento
+                real será feito.
+            </p>
+
+            <form method="POST"
+                  action="{{ url_for('simular_pagamento', pedido_id=pedido.id) }}"
+                  class="mt-6 space-y-4">
+
+                <fieldset class="space-y-3">
+                    <legend class="mb-2 font-bold text-slate-900">
+                        Escolha o resultado simulado
+                    </legend>
+
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+                        <input type="radio" name="resultado" value="aprovado" required>
+                        <span>
+                            <strong>Aprovar pagamento</strong>
+                            <span class="block text-sm text-slate-600">
+                                O pedido ficará marcado como pago na simulação.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+                        <input type="radio" name="resultado" value="recusado">
+                        <span>
+                            <strong>Recusar pagamento</strong>
+                            <span class="block text-sm text-slate-600">
+                                O pedido ficará marcado como pagamento recusado.
+                            </span>
+                        </span>
+                    </label>
+
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-4">
+                        <input type="radio" name="resultado" value="pendente">
+                        <span>
+                            <strong>Manter pagamento pendente</strong>
+                            <span class="block text-sm text-slate-600">
+                                O pedido continuará aguardando pagamento.
+                            </span>
+                        </span>
+                    </label>
+                </fieldset>
+
+                <button type="submit"
+                        class="w-full rounded-lg bg-red-700 px-6 py-3 font-bold text-white hover:bg-red-800">
+                    Aplicar resultado simulado
+                </button>
+            </form>
+
+            <a href="{{ url_for('pedidos') }}"
+               class="mt-4 inline-block font-semibold text-red-700 hover:underline">
+                Voltar aos pedidos
+            </a>
+        </section>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Empresa e local de retirada | Projeto ST{% endblock %}
+
+{% block conteudo %}
+<main class="min-h-screen bg-stone-50 px-6 py-12">
+    <div class="mx-auto max-w-5xl">
+        <h1 class="text-3xl font-extrabold text-slate-900">
+            Empresa e local de retirada
+        </h1>
+
+        <p class="mt-3 text-slate-600">
+            O Projeto ST apresenta canetas e suportes para celular e permite
+            que os clientes montem pedidos pelo catálogo.
+        </p>
+
+        <section class="mt-8 rounded-2xl border bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Contato e localização</h2>
+
+            <p class="mt-4">
+                <strong>WhatsApp:</strong>
+                <a class="font-semibold text-red-700 hover:underline"
+                   href="https://wa.me/5519936196237"
+                   target="_blank" rel="noopener noreferrer">
+                    Conversar com a equipe
+                </a>
+            </p>
+
+            <p class="mt-4">
+                <strong>E-mail:</strong>
+                {% if email_contato %}
+                    <a class="text-red-700 hover:underline"
+                       href="mailto:{{ email_contato }}">{{ email_contato }}</a>
+                {% else %}
+                    E-mail não informado.
+                {% endif %}
+            </p>
+
+            <p class="mt-4">
+                <strong>CEP de referência para retirada:</strong> 13.178-373
+            </p>
+
+            <p class="mt-4 text-sm text-slate-600">
+                O mapa é uma referência aproximada pelo CEP. Confirme o endereço
+                exato e o horário antes de se deslocar.
+            </p>
+        </section>
+
+        <section class="mt-8 rounded-2xl border bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Mapa da região</h2>
+
+            <iframe
+                class="mt-4 h-96 w-full rounded-xl border-0"
+                title="Mapa aproximado do CEP 13.178-373"
+                src="https://www.google.com/maps?q=CEP+13.178-373%2C+Brasil&amp;output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen>
+            </iframe>
+        </section>
+    </div>
+</main>
+{% endblock %}

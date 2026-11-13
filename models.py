@@ -27,6 +27,12 @@ class Pedido(db.Model):
     criado_em = db.Column(db.DateTime, nullable=False, default=datetime.now)
     usuario = db.relationship("Usuario", back_populates="pedidos")
     itens = db.relationship("ItemPedido", back_populates="pedido", cascade="all, delete-orphan")
+    endereco_entrega = db.relationship(
+    "EnderecoEntrega",
+    back_populates="pedido",
+    uselist=False,
+    cascade="all, delete-orphan"
+)
 
 class ItemPedido(db.Model):
     __tablename__="item_pedido"
@@ -40,5 +46,36 @@ class ItemPedido(db.Model):
     preco_pacote = db.Column(db.Numeric(10, 2), nullable=False)
     subtotal = db.Column(db.Numeric(10, 2), nullable=False)
     pedido = db.relationship("Pedido", back_populates="itens")
+
+class EnderecoEntrega(db.Model):
+    __tablename__ = "endereco_entrega"
+
+    id = db.Column(db.Integer, primary_key=True)
+    pedido_id = db.Column(
+        db.Integer,
+        db.ForeignKey("pedido.id"),
+        nullable=False,
+        unique=True
+    )
+    cep = db.Column(db.String(9), nullable=False)
+    logradouro = db.Column(db.String(160), nullable=False)
+    numero = db.Column(db.String(20), nullable=False)
+    complemento = db.Column(db.String(100))
+    bairro = db.Column(db.String(100), nullable=False)
+    cidade = db.Column(db.String(100), nullable=False)
+    uf = db.Column(db.String(2), nullable=False)
+
+    pedido = db.relationship("Pedido", back_populates="endereco_entrega")
+
+    def endereco_formatado(self):
+        texto = (
+            f"{self.logradouro}, {self.numero} — "
+            f"{self.bairro}, {self.cidade}/{self.uf} — CEP {self.cep}"
+        )
+
+        if self.complemento:
+            texto += f" — {self.complemento}"
+
+        return texto
     
     
